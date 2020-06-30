@@ -1,0 +1,30 @@
+options:
+	DiscordLink: discord.gg/Vexir
+	NoPermissions: &cNo Permission!
+
+	StaffModeOnJoin: false
+	StaffModeArmor: false
+	StaffModeEnabled: &6Mod Mode: &aEnabled
+	StaffModeDisabled: &6Mod Mode: &cDisabled
+ #==============================[Staff Mode]==============================#
+command /ping [<player>]:
+	aliases: /p
+	trigger:
+		if arg 1 is not set:
+#			set {ping.%player%} to %player's ping%
+#			if {ping.%player%} > 75
+			send "%colored player's prefix%%player%&e's Ping: &a%player's ping%ms"
+		else:
+			send "%colored arg-1's prefix%%arg-1%&e's Ping: &a%arg-1's ping%ms"
+
+
+command /staffLOL:
+    trigger:
+        if player has permission "staff.gui":
+            open chest inventory named "&3ONLINE STAFF LIST" to player
+            set {_num} to 0
+            loop all players:
+                if loop-player has permission "staff.gui":
+                    format gui slot {_num} of player with skull of loop-player named "&a%loop-player%" with lore "&7Rank: %prefix of loop-player%"
+                    add 1 to {_num}
+ 

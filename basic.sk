@@ -1,0 +1,518 @@
+options:
+	NoPermissions: <red>No Permission.
+	
+	Server: SkyBlock
+	Store: store.vexirmc.ga
+	SeeAlertsPermission: staff.alerts
+	OwnerAlertsPermission: owner.alerts
+	ReportLine1: &9[Report] &7[SkyBlock] %colored arg-1's prefix%%arg-1% &7(%{%arg-1%.reportcount}%) &7reported by %colored player's prefix%%player%
+	ReportLine2: &9Reason: &7%arg-2%
+	RequestLine1: &9[Request] &7[SkyBlock] %colored player's prefix%%player% &7requested assistance
+	RequestLine2: &9Reason: &7%arg-1%
+	AssistanceCooldown: 120 #In seconds
+	
+on right click on entity:
+	name of clicked entity is "&6&lShop Keeper":
+		make player execute command "/shop"
+
+on right click:
+	if name of player's tool contains "Money Note &a&l◆":
+		make console execute command "/eco give %player% "
+
+command /rep:
+	trigger:
+		send "&7&m------------------------------------------------------------------"
+		send "&6&lPlayer Reputation"
+		send "&7"
+		send "&8Bronze - &7[&f1000RP &7-> &f1999RP&7]"
+		send "&fSilver &8- &7[&f2000RP &7-> &f2999RP&7]"
+		send "&6Gold &8- &7[&f3000RP &7-> &f3999RP&7]"
+		send "&bDiamond &8- &7[&f4000RP &7-> &f4999RP&7]"
+		send "&cMaster &8- &7[&f5000RP+&7]"
+		send "&r"
+		send "&eYour current RP is &f%{elo::%player%}%RP &7: %{elo.tag.%player%}%"
+		send "&eYou can earn RP by PlayTime, mining ores, and more"
+		send "&f"
+		send "&7&oFor more about player reputation, vist vexirmc.ga/rep"
+		send "&7&m------------------------------------------------------------------"
+
+command /vote:
+	trigger:
+		send ""
+		send "&6&nHere are the links you can use to vote for skyblock!"
+		send ""
+		send "&6&l* &fhttps://minecraftservers.org/server/584064"
+		send "&6&l* &fhttps://minecraft-server-list.com/server/459723/vote/"
+		send ""
+		
+on chat:
+	if message is "Nigga", "Nigger", "Jap", "Beaner", "Faggot" or "Fag":
+		cancel event
+		loop all players:
+			if loop-player has permission "staff.alerts":
+				send "<suggest command:/mute %player% Racism><show text:&cClick &4Here &cto mute>&4✘ &7&r%colored player's prefix%%player%&7: &d%message%" to loop-player
+
+#==============================[Staff Alerts]==============================#
+command /showmethedoor:
+	trigger:
+		kick the player due to "&eHere is the Door"	
+command /gkit:
+	trigger:
+		send "&cNo Perm"
+command /report [<player>] [<text>]:
+	aliases: /fuckingcheater
+	executable by: players
+	trigger:
+		if arg-1 is not set:
+			send "&cUsage: /report <player> <reason...>" to player
+			stop trigger
+		if arg-2 is not set:
+			send "&cUsage: /report <player> <reason...>" to player
+			stop trigger
+		set {_waited} to difference between {report.%player%.lastused} and now
+		if {_waited} is less than {@AssistanceCooldown} seconds:
+			message "&cYou can only make on staff request every 2 minutes."
+			stop
+		add 1 to {%arg-1%.reportcount}
+		send "&aWe have received your report."
+		loop all players:
+			loop-player has permission "staff.alerts"
+			send "{@ReportLine1}" to loop-player
+			send "     {@ReportLine2}" to loop-player
+			set {report.%player%.lastused} to now
+			
+command /discord [<text>]:
+	trigger:
+		send "&6You can join our discord at: &ehttps://discord.gg/TGU75Bz"
+command /rules [<text>]:
+	trigger:
+		send ""
+		send "&6&lSkyBlock Rules&7: &7[Hover for Punishment]"
+		send ""
+		send "<show text:&6Main account 1 day ban, Alt is perm ban.>&7&l* &6Only one alt per player" to player
+		send "<show text:&635 day mute.>&7&l* &6Advertising other servers" to player
+		send "<show text:&615 minute mute>&7&l* &6Disrespecting staff" to player
+		send "<show text:&635d ban.&7&l>&7&l* &6Evading a punishment" to player
+		send "<show text:&6Permanent mute.>&7&l* &6DDOS Treats/Threatening to steal someones IP." to player
+		send "<show text:&61 to 10 day ban>&7&l* &6Duping/Abusing bugs (Report them to staff)" to player
+		send "<show text:&6Bans can range from 1 day to a permanent ban.>&7&l* &6Cheating of any type." to player
+		send ""
+		send "<show text:&fStay up to date!>  &f&l Rules can be subject to change." to player
+		send ""
+command /helpop [<text>]:
+	aliases: /request
+	executable by: players
+	trigger:
+		if arg-1 is not set:
+			send "&cUsage: /request <reason...>" to player
+			stop trigger
+		set {_waited} to difference between {report.%player%.lastused} and now
+		if {_waited} is less than {@AssistanceCooldown} seconds:
+			message "&cYou can only make on staff request every 2 minutes."
+			stop
+		send "&aWe have received your request."
+		loop all players:
+			loop-player has permission "staff.alerts"
+			send "{@RequestLine1}" to loop-player
+			send "     {@RequestLine2}" to loop-player
+			set {report.%player%.lastused} to now
+			
+on quit:
+	set {%player%.reportcount} to 0
+	
+command /sc:
+	aliases: staffchat
+	permission: staff.staffchat
+	permission message: {@NoPermissions}
+	executable by: players
+	trigger:
+		if {staffchat.%player%} is true:	
+			send "&6StaffChat: &cDisabled" to player
+			set {staffchat.%player%} to false
+			stop
+		if {staffchat.%player%} is false:
+			send "&6StaffChat: &aEnabled" to player
+			set {staffchat.%player%} to true
+			stop
+		if {staffchat.%player%} is not set:
+			send "&6StaffChat: &aEnabled" to player
+			set {staffchat.%player%} to true
+			stop
+
+command /staffchat:
+	trigger:
+		make player execute command "/sc"
+			
+every 120 seconds:
+	set {_random} to a random integer between 60 and 100
+	make console execute command "island admin refreshholograms"
+	loop all players:
+		loop-player has permission "{@OwnerAlertsPermission}"
+		send "&7[&6&lSystem&7] &fSaved &6%amount of all players% &fstats to Mongo database in &6%{_random}%ms&f." to loop-player
+#==============================[Online Donators]==============================#
+#every 5 minutes:
+#	loop all players:
+#		loop-player has permission "online.donator"
+#		add loop-player to {_online donator::*}
+#		loop-player has permission "staff.alert"
+#		remove loop-player from {_online donator::*}
+#		size of {_online donator::*} is 0:
+#			stop
+#		else:
+#			broadcast " "
+#			broadcast "&6&lOnline Donators &7[{@Server}]:"
+#			broadcast " &7&o%{_online donator::*}%"
+#			broadcast "&7Want to be shown on here purches a rank at &6&n{@Store}"
+#			broadcast " "
+		
+		
+#==============================[Clear]==============================#
+command /clear [<player>]:
+	aliases: /ci, /eclear
+	permission: scopes.clear
+	permission message: &cNo Permission!
+	trigger:
+		if arg 1 is not set:
+			send "<gray>Your <light red>inventory<gray> has been cleared."
+			clear player's inventory
+		if arg 1 is set:
+			message "<gray>Your <light red>inventory<gray> has been cleared"
+			clear arg 1's inventory
+		
+command /givecraterank [<player>] [<text>] [<text>]:
+	executable by: console
+	trigger:
+		broadcast ""
+		broadcast "&7[&6&lCrate&7] &6&l%arg 1% &ehas just won the &6&l30d %arg-2% &erank from the &6&l%arg-3% &ecrate!!!"
+		broadcast ""
+		make console execute command "upc addGroup %arg 1% %arg-2% 30d"
+
+command /givemoneynote [<player>] [<text>]:
+	executable by: console
+	trigger:
+		send "&aYou have recived a &l$%arg-2% &aMoney Note!" arg-1
+		give 1 of paper named "&6&l◆ &a&o$%arg-2% Money Note &a&l◆" to arg-1
+			
+		
+command /reboot [<text>]:
+	trigger:
+		if player has permission "reboot.use":
+			if arg 1 is not set:
+				send "&c/reboot 30s | 1m"
+			if arg 1 is "30s":
+				broadcast "&4&l✦&4&m---------------------------&4&l✦"
+				broadcast "&cSkyblock will Reboot in 30s."
+				broadcast "&4&l✦&4&m---------------------------&4&l✦"
+				wait 20 seconds
+				broadcast "&4&l✦&4&m---------------------------&4&l✦"
+				broadcast "&cSkyblock will Reboot in 10s."
+				broadcast "&4&l✦&4&m---------------------------&4&l✦"
+				wait 5 seconds
+				broadcast "&4&l✦&4&m---------------------------&4&l✦"
+				broadcast "&cSkyblock will Reboot in 4s."
+				broadcast "&4&l✦&4&m---------------------------&4&l✦"
+				wait 1 seconds
+				broadcast "&4&l✦&4&m---------------------------&4&l✦"
+				broadcast "&cSkyblock will Reboot in 3s."
+				broadcast "&4&l✦&4&m---------------------------&4&l✦"
+				wait 1 seconds
+				broadcast "&4&l✦&4&m---------------------------&4&l✦"
+				broadcast "&cSkyblock will Reboot in 2s."
+				broadcast "&4&l✦&4&m---------------------------&4&l✦"
+				wait 1 seconds
+				broadcast "&4&l✦&4&m---------------------------&4&l✦"
+				broadcast "&cSkyblock will Reboot in 1s."
+				broadcast "&4&l✦&4&m---------------------------&4&l✦"
+				wait 1.5 seconds
+				execute console command "restart"
+			if arg 1 is "1m":
+				broadcast "&4&l✦&4&m---------------------------&4&l✦"
+				broadcast "&cSkyblock will Reboot in 60s."
+				broadcast "&4&l✦&4&m---------------------------&4&l✦"
+				wait 50 seconds
+				broadcast "&4&l✦&4&m---------------------------&4&l✦"
+				broadcast "&cSkyblock will Reboot in 10s."
+				broadcast "&4&l✦&4&m---------------------------&4&l✦"
+				wait 5 seconds
+				broadcast "&4&l✦&4&m---------------------------&4&l✦"
+				broadcast "&cSkyblock will Reboot in 4s."
+				broadcast "&4&l✦&4&m---------------------------&4&l✦"
+				wait 1 seconds
+				broadcast "&4&l✦&4&m---------------------------&4&l✦"
+				broadcast "&cSkyblock will Reboot in 3s."
+				broadcast "&4&l✦&4&m---------------------------&4&l✦"
+				wait 1 seconds
+				broadcast "&4&l✦&4&m---------------------------&4&l✦"
+				broadcast "&cSkyblock will Reboot in 2s."
+				broadcast "&4&l✦&4&m---------------------------&4&l✦"
+				wait 1 seconds
+				broadcast "&4&l✦&4&m---------------------------&4&l✦"
+				broadcast "&cSkyblock will Reboot in 1s."
+				broadcast "&4&l✦&4&m---------------------------&4&l✦"
+				wait 1.5 seconds
+				execute console command "restart"
+			if arg 1 is "5s":
+				broadcast "&4&l✦&4&m---------------------------&4&l✦"
+				broadcast "&cSkyblock will Reboot in 5s."
+				broadcast "&4&l✦&4&m---------------------------&4&l✦"
+				wait 1 seconds
+				broadcast "&4&l✦&4&m---------------------------&4&l✦"
+				broadcast "&cSkyblock will Reboot in 4s."
+				broadcast "&4&l✦&4&m---------------------------&4&l✦"
+				wait 1 seconds
+				broadcast "&4&l✦&4&m---------------------------&4&l✦"
+				broadcast "&cSkyblock will Reboot in 3s."
+				broadcast "&4&l✦&4&m---------------------------&4&l✦"
+				wait 1 seconds
+				broadcast "&4&l✦&4&m---------------------------&4&l✦"
+				broadcast "&cSkyblock will Reboot in 2s."
+				broadcast "&4&l✦&4&m---------------------------&4&l✦"
+				wait 1 seconds
+				broadcast "&4&l✦&4&m---------------------------&4&l✦"
+				broadcast "&cSkyblock will Reboot in 1s."
+				broadcast "&4&l✦&4&m---------------------------&4&l✦"
+				wait 1.5 seconds
+				execute console command "restart"
+		else:
+			send "&cNo Permission!"
+			stop 	
+			
+			
+command /kit [<text>]:
+	trigger:
+		if arg-1 is not set:
+			if player has permission "basic.kit.geniusplus":
+				send "&eYour usable donor kits: &6Food&f, &6Member&f, &6Smart&f, &6Intelligent&f, &6Genius&f, &6Genius+"
+				stop
+			if player has permission "basic.kit.genius":
+				send "&eYour usable donor kits: &6Food&f, &6Member&f, &6Smart&f, &6Intelligent&f, &6Genius"
+				stop
+			if player has permission "basic.kit.intelligent":
+				send "&eYour usable donor kits: &6Food&f, &6Member&f, &6Smart&f, &6Intelligent"
+				stop
+			if player has permission "basic.kit.smart":
+				send "&eYour usable donor kits: &6Food&f, &6Member&f, &6Smart"
+				stop
+			else:
+				send "&eYour usable donor kits: &6Food&f, &6Member"
+				stop
+		if arg-1 is "Food":
+			if {kit.food.%player%} is true:
+				send "&cSorry but you have already used this Kit!"
+			else:
+				send "&cYou have just used your Food kit!"
+				give player 32 steak
+				set {kit.food.%player%} to true
+		if arg-1 is "Member":
+			if {kit.member.%player%} is true:
+				send "&cSorry but you have already used this Kit!"
+			else:
+				send "&aSuccess! &6You have been given the &a&lMember &6Kit."
+				give 1 of diamond sword of sharpness 2 and unbreaking 2 named "&a&lMember &7Sword" to player
+				give 1 of iron helmet of protection 1 and unbreaking 2 named "&a&lMember &7Helmet" to player
+				give 1 of iron chestplate of protection 1 and unbreaking 2 named "&a&lMember &7Chestplate" to player
+				give 1 of iron leggings of protection 1 and unbreaking 2 named "&a&lMember &7Leggings" to player
+				give 1 of iron boots of protection 1 and unbreaking 2 named "&a&lMember &7Boots" to player
+				give 2 of golden apple item to player
+				give player 32 steak
+				set {kit.member.%player%} to true
+				wait 172800 seconds
+				set {kit.member.%player%} to false
+				give player 32 steak
+		if arg-1 is "Smart":
+			if {kit.smart.%player%} is true:
+				send "&cSorry but you have already used this Kit!"
+			else:
+				send "&aSuccess! &6You have been given the &6&lSmart &6Kit."
+				give 1 of diamond sword of sharpness 2 and unbreaking 3 named "&6&lSmart &7Sword" to player
+				give 1 of diamond helmet of protection 1 and unbreaking 3 named "&6&lSmart &7Helmet" to player
+				give 1 of diamond chestplate of protection 1 and unbreaking 3 named "&6&lSmart &7Chestplate" to player
+				give 1 of diamond leggings of protection 1 and unbreaking 3 named "&6&lSmart &7Leggings" to player
+				give 1 of diamond boots of protection 1 and unbreaking 3 named "&6&lSmart &7Boots" to player
+				give 8 of golden apple item to player
+				give 1 of notch apple to player
+				give player 32 steak
+				set {kit.smart.%player%} to true
+				wait 172800 seconds
+				set {kit.smart.%player%} to false
+				give player 32 steak
+		if arg-1 is "intelligent":
+			if {kit.intelligent.%player%} is true:
+				send "&cSorry but you have already used this Kit!"
+			else:
+				send "&aSuccess! &6You have been given the &8&lIntelligent &6Kit."
+				give 1 of diamond sword of sharpness 3 and unbreaking 4 named "&8&lIntelligent &7Sword" to player
+				give 1 of diamond helmet of protection 2 and unbreaking 4 named "&8&lIntelligent &7Helmet" to player
+				give 1 of diamond chestplate of protection 2 and unbreaking 4 named "&8&lIntelligent &7Chestplate" to player
+				give 1 of diamond leggings of protection 2 and unbreaking 4 named "&8&lIntelligent &7Leggings" to player
+				give 1 of diamond boots of protection 2 and unbreaking 4 named "&8&lIntelligent &7Boots" to player
+				give 16 of golden apple item to player
+				give 2 of notch apple to player
+				give player 32 steak
+				set {kit.intelligent.%player%} to true
+				wait 172800 seconds
+				set {kit.intelligent.%player%} to false
+				give player 32 steak
+		if arg-1 is "genius":
+			if {kit.genius.%player%} is true:
+				send "&cSorry but you have already used this Kit!"
+			else:
+				send "&aSuccess! &6You have been given the &5&lGenius &6Kit."
+				give 1 of diamond sword of sharpness 5 and unbreaking 5 named "&5&lGenius &7Sword" to player
+				give 1 of diamond helmet of protection 4 and unbreaking 5 named "&5&lGenius &7Helmet" to player
+				give 1 of diamond chestplate of protection 4 and unbreaking 5 named "&5&lGenius &7Chestplate" to player
+				give 1 of diamond leggings of protection 4 and unbreaking 5 named "&5&lGenius &7Leggings" to player
+				give 1 of diamond boots of protection 4 and unbreaking 5 named "&5&lGenius &7Boots" to player
+				give 32 of golden apple item to player
+				give 4 of notch apple to player
+				give player 32 steak
+				set {kit.genius.%player%} to true
+				wait 172800 seconds
+				set {kit.genius.%player%} to false
+				give player 32 steak
+		if arg-1 is "genius+":
+			if {kit.genius+.%player%} is true:
+				send "&cSorry but you have already used this Kit!"
+			else:
+				send "&aSuccess! &6You have been given the &f&lGenius+ &6Kit."
+				give 1 of diamond sword of sharpness 6 and unbreaking 7 named "&f&lGenius+ &7Sword" to player
+				give 1 of diamond helmet of protection 6 and unbreaking 7 named "&f&lGenius+ &7Helmet" to player
+				give 1 of diamond chestplate of protection 6 and unbreaking 7 named "&f&lGenius+ &7Chestplate" to player
+				give 1 of diamond leggings of protection 6 and unbreaking 7 named "&f&lGenius+ &7Leggings" to player
+				give 1 of diamond boots of protection 6 and unbreaking 7 named "&f&lGenius+ &7Boots" to player
+				give 48 of golden apple item to player
+				give 8 of notch apple to player
+				give player 32 steak
+				set {kit.genius+.%player%} to true
+				wait 172800 seconds
+				set {kit.genius+.%player%} to false
+command /kits [<text>]:
+	trigger:
+		if arg-1 is not set:
+			if player has permission "basic.kit.geniusplus":
+				send "&eYour usable donor kits: &6Food&f, &6Member&f, &6Smart&f, &6Intelligent&f, &6Genius&f, &6Genius+"
+				stop
+			if player has permission "basic.kit.genius":
+				send "&eYour usable donor kits: &6Food&f, &6Member&f, &6Smart&f, &6Intelligent&f, &6Genius"
+				stop
+			if player has permission "basic.kit.intelligent":
+				send "&eYour usable donor kits: &6Food&f, &6Member&f, &6Smart&f, &6Intelligent"
+				stop
+			if player has permission "basic.kit.smart":
+				send "&eYour usable donor kits: &6Food&f, &6Member&f, &6Smart"
+				stop
+			else:
+				send "&eYour usable donor kits: &6Food&f, &6Member"
+				stop
+		if arg-1 is "Food":
+			if {kit.food.%player%} is true:
+				send "&cSorry but you have already used this Kit!"
+			else:
+				send "&cYou have just used your Food kit!"
+				give player 32 steak
+				set {kit.food.%player%} to true
+		if arg-1 is "Member":
+			if {kit.member.%player%} is true:
+				send "&cSorry but you have already used this Kit!"
+			else:
+				send "&aSuccess! &6You have been given the &a&lMember &6Kit."
+				give 1 of diamond sword of sharpness 2 and unbreaking 2 named "&a&lMember &7Sword" to player
+				give 1 of iron helmet of protection 1 and unbreaking 2 named "&a&lMember &7Helmet" to player
+				give 1 of iron chestplate of protection 1 and unbreaking 2 named "&a&lMember &7Chestplate" to player
+				give 1 of iron leggings of protection 1 and unbreaking 2 named "&a&lMember &7Leggings" to player
+				give 1 of iron boots of protection 1 and unbreaking 2 named "&a&lMember &7Boots" to player
+				give 2 of golden apple item to player
+				give player 32 steak
+				set {kit.member.%player%} to true
+				wait 172800 seconds
+				set {kit.member.%player%} to false
+				give player 32 steak
+		if arg-1 is "Smart":
+			if {kit.smart.%player%} is true:
+				send "&cSorry but you have already used this Kit!"
+			else:
+				send "&aSuccess! &6You have been given the &6&lSmart &6Kit."
+				give 1 of diamond sword of sharpness 2 and unbreaking 3 named "&6&lSmart &7Sword" to player
+				give 1 of diamond helmet of protection 1 and unbreaking 3 named "&6&lSmart &7Helmet" to player
+				give 1 of diamond chestplate of protection 1 and unbreaking 3 named "&6&lSmart &7Chestplate" to player
+				give 1 of diamond leggings of protection 1 and unbreaking 3 named "&6&lSmart &7Leggings" to player
+				give 1 of diamond boots of protection 1 and unbreaking 3 named "&6&lSmart &7Boots" to player
+				give 8 of golden apple item to player
+				give 1 of notch apple to player
+				give player 32 steak
+				set {kit.smart.%player%} to true
+				wait 172800 seconds
+				set {kit.smart.%player%} to false
+				give player 32 steak
+		if arg-1 is "intelligent":
+			if {kit.intelligent.%player%} is true:
+				send "&cSorry but you have already used this Kit!"
+			else:
+				send "&aSuccess! &6You have been given the &8&lIntelligent &6Kit."
+				give 1 of diamond sword of sharpness 3 and unbreaking 4 named "&8&lIntelligent &7Sword" to player
+				give 1 of diamond helmet of protection 2 and unbreaking 4 named "&8&lIntelligent &7Helmet" to player
+				give 1 of diamond chestplate of protection 2 and unbreaking 4 named "&8&lIntelligent &7Chestplate" to player
+				give 1 of diamond leggings of protection 2 and unbreaking 4 named "&8&lIntelligent &7Leggings" to player
+				give 1 of diamond boots of protection 2 and unbreaking 4 named "&8&lIntelligent &7Boots" to player
+				give 16 of golden apple item to player
+				give 2 of notch apple to player
+				give player 32 steak
+				set {kit.intelligent.%player%} to true
+				wait 172800 seconds
+				set {kit.intelligent.%player%} to false
+				give player 32 steak
+		if arg-1 is "genius":
+			if {kit.genius.%player%} is true:
+				send "&cSorry but you have already used this Kit!"
+			else:
+				send "&aSuccess! &6You have been given the &5&lGenius &6Kit."
+				give 1 of diamond sword of sharpness 5 and unbreaking 5 named "&5&lGenius &7Sword" to player
+				give 1 of diamond helmet of protection 4 and unbreaking 5 named "&5&lGenius &7Helmet" to player
+				give 1 of diamond chestplate of protection 4 and unbreaking 5 named "&5&lGenius &7Chestplate" to player
+				give 1 of diamond leggings of protection 4 and unbreaking 5 named "&5&lGenius &7Leggings" to player
+				give 1 of diamond boots of protection 4 and unbreaking 5 named "&5&lGenius &7Boots" to player
+				give 32 of golden apple item to player
+				give 4 of notch apple to player
+				give player 32 steak
+				set {kit.genius.%player%} to true
+				wait 172800 seconds
+				set {kit.genius.%player%} to false
+				give player 32 steak
+		if arg-1 is "genius+":
+			if {kit.genius+.%player%} is true:
+				send "&cSorry but you have already used this Kit!"
+			else:
+				send "&aSuccess! &6You have been given the &f&lGenius+ &6Kit."
+				give 1 of diamond sword of sharpness 6 and unbreaking 7 named "&f&lGenius+ &7Sword" to player
+				give 1 of diamond helmet of protection 6 and unbreaking 7 named "&f&lGenius+ &7Helmet" to player
+				give 1 of diamond chestplate of protection 6 and unbreaking 7 named "&f&lGenius+ &7Chestplate" to player
+				give 1 of diamond leggings of protection 6 and unbreaking 7 named "&f&lGenius+ &7Leggings" to player
+				give 1 of diamond boots of protection 6 and unbreaking 7 named "&f&lGenius+ &7Boots" to player
+				give 48 of golden apple item to player
+				give 8 of notch apple to player
+				give player 32 steak
+				set {kit.genius+.%player%} to true
+				wait 172800 seconds
+				set {kit.genius+.%player%} to false
+command /resetkits:
+	trigger:
+		if player has permission "kit.reset":
+			set {kit.genius+.%player%} to false
+			set {kit.genius.%player%} to false
+			set {kit.intelligent.%player%} to false
+			set {kit.smart.%player%} to false
+			set {kit.member.%player%} to false
+			send "&eHave reset all your &6Kit &ecooldowns!"
+on join:
+	set join message to ""
+
+on quit:
+	set leave message to ""
+
+on first join:
+	send ""
+	send "&6Welcome to &6&lVexir SkyBlock"
+	send "&4&lPLEASE NOTE RANKS ARE COMPLETELY DIFFERENT FROM THE REST OF VEXIR!!"
+	send ""
+	make console execute command "/eco set %player% 10000"
+	send "&aSince this is your first time joining you have recived a free &l10k"

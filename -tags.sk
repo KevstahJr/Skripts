@@ -1,0 +1,7 @@
+command /lolxd:
+	trigger:
+		if {mod.%player%} is true:
+			set score "&7[Mod Mode&7]" below player to player's health*2 for player
+		else:
+			set score "&7]" below player to player's health*2 for player
+

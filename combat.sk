@@ -1,0 +1,33 @@
+on damage:
+    attacker is a player
+    victim is a player
+    set attacker's flight mode to false
+    set victim's flight mode to false
+    set {p.%name of attacker%::combacttag} to "true"
+    set {p.%name of victim%::combacttag} to "true"
+    wait 30 seconds
+    set {p.%name of attacker%::combacttag} to "false"
+    set {p.%name of victim%::combacttag} to "false"
+
+on quit:
+    if {p.%player%::combacttag} is "true":	
+        kill player
+        set {p.%player%::combacttag} to "false"
+    if {p.%player%::combacttag} is "false":
+        stop
+
+on join:
+    if {p.%player%::combacttag} is not set:
+        set {p.%player%::combacttag} to "false"
+    if {p.%player%::combacttagtrue} is not set:
+        set {p.%player%::combacttag} to "false"
+
+command /combat:
+    trigger:
+        send "&6&lCombat Timer&7: &f%{p.%player%::combacttag}%"
+
+on command:
+	if command is "spawn", "heal", "feed", "is" or "hub":
+		if {p.%player%::combacttag} is "true":	
+			cancel event
+			send "&cYou cant do this while Combat Tagged!"

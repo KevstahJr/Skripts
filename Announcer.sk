@@ -1,0 +1,23 @@
+every 2 minutes:
+    set {randombc} to a random integer from 1 to 6
+    if {randombc} = 1:
+        broadcast ""
+        broadcast "&6Be sure to join our Discord"
+        broadcast "&f&nhttps://discord.gg/TGU75Bz"
+        broadcast ""
+    if {randombc} = 2:
+        broadcast ""
+        broadcast "&6Be sure to follow our twitter"
+        broadcast "&f&nhttps://twitter.com/VexirMC"
+        broadcast ""
+    if {randombc} = 3:
+        broadcast ""
+        broadcast "&6Enjoying the server? Help us keep it up by buying a rank:"
+        broadcast "&f&nhttp://vexir.tebex.io"
+        broadcast ""
+    if {randombc} = 4:
+        broadcast "&7[&6&lTIP&7] &6Want to automate simple processes? &f/minion store"
+    if {randombc} = 5:
+        broadcast "&7[&6&lTIP&7] &6Want to max out your island? &f/island upgrades"
+    if {randombc} = 6:
+        broadcast "&7[&6&lTIP&7] &6Want to receive a special spawner? &f/mobcoins"
