@@ -19,3 +19,4 @@ This project was made to help people who are using skript and dont know how to c
   - StaffMode (Not Good but it did the Job so...) 
   - sBasic (REMOVED) 
   - Stats
+  - ETC... might be more but i am too lazy too add them tbh
