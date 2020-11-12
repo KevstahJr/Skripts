@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://www.vexirmc.ga/css/Debug/images/logo.png" width="200" height="150"/>
+    <img src="https://cdn.discordapp.com/attachments/713092722550112267/775760924765061130/server-icon3.png" width="200" height="150"/>
 </p>
 
 # Skripts
